@@ -217,7 +217,6 @@ class Predictor(object):
                 )
             )
         coco.add_image(coco_image)
-        save_json(data=coco.json, save_path=save_path)
 
 
 def image_demo(predictor, vis_folder, path, current_time, save_result):
@@ -229,15 +228,15 @@ def image_demo(predictor, vis_folder, path, current_time, save_result):
     for image_name in files:
         outputs, img_info = predictor.inference(image_name)
         predictor.add_image(img_info,outputs[0])
-        result_image = predictor.visual(outputs[0], img_info, predictor.confthre)
-        if save_result:
-            save_folder = os.path.join(
-                vis_folder, time.strftime("%Y_%m_%d_%H_%M_%S", current_time)
-            )
-            os.makedirs(save_folder, exist_ok=True)
-            save_file_name = os.path.join(save_folder, os.path.basename(image_name))
-            logger.info("Saving detection result in {}".format(save_file_name))
-            cv2.imwrite(save_file_name, result_image)
+        # result_image = predictor.visual(outputs[0], img_info, predictor.confthre)
+        # if save_result:
+        #     save_folder = os.path.join(
+        #         vis_folder, time.strftime("%Y_%m_%d_%H_%M_%S", current_time)
+        #     )
+        #     os.makedirs(save_folder, exist_ok=True)
+        #     save_file_name = os.path.join(save_folder, os.path.basename(image_name))
+        #     logger.info("Saving detection result in {}".format(save_file_name))
+        #     cv2.imwrite(save_file_name, result_image)
         # ch = cv2.waitKey(0)
         # if ch == 27 or ch == ord("q") or ch == ord("Q"):
         #     break
@@ -348,6 +347,7 @@ def main(exp, args):
         image_demo(predictor, vis_folder, args.path, current_time, args.save_result)
     elif args.demo == "video" or args.demo == "webcam":
         imageflow_demo(predictor, vis_folder, current_time, args)
+    save_json(data=coco.json, save_path=save_path)
 
 
 if __name__ == "__main__":
