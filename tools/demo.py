@@ -17,6 +17,13 @@ from yolox.exp import get_exp
 from yolox.utils import fuse_model, get_model_info, postprocess, vis
 
 IMAGE_EXT = [".jpg", ".jpeg", ".webp", ".bmp", ".png"]
+COCO_dataset_classes={0: 'person', 1: 'bicycle', 2: 'car', 3: 'motorcycle', 4: 'airplane', 5: 'bus', 6: 'train', 7: 'truck', 8: 'boat', 9: 'traffic light', 10: 'fire hydrant', 11: 'stop sign', 12: 'parking meter', 13: 'bench', 14: 'bird', 15: 'cat', 16: 'dog', 17: 'horse', 18: 'sheep', 19: 'cow', 20: 'elephant', 21: 'bear', 22: 'zebra', 23: 'giraffe', 24: 'backpack', 25: 'umbrella', 26: 'handbag', 27: 'tie', 28: 'suitcase', 29: 'frisbee', 30: 'skis', 31: 'snowboard', 32: 'sports ball', 33: 'kite', 34: 'baseball bat', 35: 'baseball glove', 36: 'skateboard', 37: 'surfboard', 38: 'tennis racket', 39: 'bottle', 40: 'wine glass', 41: 'cup', 42: 'fork', 43: 'knife', 44: 'spoon', 45: 'bowl', 46: 'banana', 47: 'apple', 48: 'sandwich', 49: 'orange', 50: 'broccoli', 51: 'carrot', 52: 'hot dog', 53: 'pizza', 54: 'donut', 55: 'cake', 56: 'chair', 57: 'couch', 58: 'potted plant', 59: 'bed', 60: 'dining table', 61: 'toilet', 62: 'tv', 63: 'laptop', 64: 'mouse', 65: 'remote', 66: 'keyboard', 67: 'cell phone', 68: 'microwave', 69: 'oven', 70: 'toaster', 71: 'sink', 72: 'refrigerator', 73: 'book', 74: 'clock', 75: 'vase', 76: 'scissors', 77: 'teddy bear', 78: 'hair drier', 79: 'toothbrush'}
+from sahi.utils.coco import Coco, CocoCategory, CocoImage, CocoAnnotation
+from sahi.utils.file import save_json
+coco = Coco()
+save_path = 'datasets/annotations/custom.json'
+for i in range(80):
+    coco.add_category(CocoCategory(id=i, name=COCO_dataset_classes[i]))
 
 
 def make_parser():
@@ -179,9 +186,38 @@ class Predictor(object):
 
         cls = output[:, 6]
         scores = output[:, 4] * output[:, 5]
-
         vis_res = vis(img, bboxes, scores, cls, cls_conf, self.cls_names)
         return vis_res
+
+    def add_image(self, img_info, output):
+        # id_str =img_info['file_name'][:-4]
+        # id=''
+        # for i in id_str:
+        #     if i.isdigit() and i == '0':
+        #         id+=i
+        coco_image = CocoImage(file_name=img_info['file_name'], height=img_info['height'], width=img_info['width'],
+                               id=img_info['id'])
+        ratio = img_info["ratio"]
+        img = img_info["raw_img"]
+        if output is None:
+            return img
+        output = output.cpu()
+
+        bboxes = output[:, 0:4]
+
+        # preprocessing: resize
+        bboxes /= ratio
+        cls = output[:, 6]
+        for i in range(len(bboxes)):
+            coco_image.add_annotation(
+                CocoAnnotation(
+                    bbox=bboxes[i].numpy(),
+                    category_id=cls[i].item(),
+                    category_name=self.cls_names[int(cls[0].item())],
+                )
+            )
+        coco.add_image(coco_image)
+        save_json(data=coco.json, save_path=save_path)
 
 
 def image_demo(predictor, vis_folder, path, current_time, save_result):
@@ -192,6 +228,7 @@ def image_demo(predictor, vis_folder, path, current_time, save_result):
     files.sort()
     for image_name in files:
         outputs, img_info = predictor.inference(image_name)
+        predictor.add_image(img_info,outputs[0])
         result_image = predictor.visual(outputs[0], img_info, predictor.confthre)
         if save_result:
             save_folder = os.path.join(

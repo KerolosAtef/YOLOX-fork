@@ -4,11 +4,13 @@
 # user experiments directory
 YOLOX_outputs/
 # do not ignore datasets under yolox/data
+datasets
 !*yolox/data/datasets/
 
 # temporary files which can be created if a process still has a handle open of a deleted file
 .fuse_hidden*
 *.zip
+
 # KDE directory preferences
 .directory
 
