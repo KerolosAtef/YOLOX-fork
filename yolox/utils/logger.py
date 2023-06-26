@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 # Copyright (c) Megvii Inc. All rights reserved.
 
-import inspect
-import os
-import sys
-from collections import defaultdict
 from loguru import logger
 
 import cv2
 import numpy as np
 
 import torch
+
+import inspect
+import os
+import sys
+from collections import defaultdict
 
 
 def get_caller_name(depth=0):
