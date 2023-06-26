@@ -1,7 +1,9 @@
 import torch
-import time
-from nebullvm.api.functions import optimize_model # Install DL compilers
+
 from yolox.exp import get_exp
+
+import time
+from nebullvm.api.functions import optimize_model  # Install DL compilers
 
 # Get YOLO model
 exp = get_exp(None, 'yolox-s') # select model name
@@ -12,13 +14,13 @@ model.eval()
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Create dummy data for the optimizer
-input_data =  [((torch.randn(1, 3, 640, 640).to(device), ), 0) for i in range(100)] 
+input_data =  [((torch.randn(1, 3, 640, 640).to(device), ), 0) for i in range(100)]
 
-# ---------- Optimization ---------- 
+# ---------- Optimization ----------
 optimized_model = optimize_model(model, input_data=input_data, optimization_time="constrained")  # Optimization without performance loss
 
 
-# ---------- Benchmarks ---------- 
+# ---------- Benchmarks ----------
 # Select image to test the latency of the optimized model
 
 # Create dummy image

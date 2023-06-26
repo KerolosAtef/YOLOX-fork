@@ -2,10 +2,6 @@
 # -*- coding:utf-8 -*-
 # Copyright (c) Megvii, Inc. and its affiliates.
 
-import argparse
-import os
-import random
-import warnings
 from loguru import logger
 
 import torch
@@ -22,6 +18,11 @@ from yolox.utils import (
     get_model_info,
     setup_logger
 )
+
+import argparse
+import os
+import random
+import warnings
 
 
 def make_parser():
