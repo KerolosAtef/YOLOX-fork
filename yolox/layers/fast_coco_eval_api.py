@@ -5,11 +5,11 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
 # Copyright (c) Megvii Inc. All rights reserved.
 
-import copy
-import time
-
 import numpy as np
 from pycocotools.cocoeval import COCOeval
+
+import copy
+import time
 
 from .jit_ops import FastCOCOEvalOp
 

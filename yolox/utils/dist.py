@@ -9,17 +9,18 @@ This file contains primitives for multi-gpu communication.
 This is useful when doing distributed training.
 """
 
-import functools
-import os
-import pickle
-import time
-from contextlib import contextmanager
 from loguru import logger
 
 import numpy as np
 
 import torch
 from torch import distributed as dist
+
+import functools
+import os
+import pickle
+import time
+from contextlib import contextmanager
 
 __all__ = [
     "get_num_devices",

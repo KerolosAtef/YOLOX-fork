@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # Copyright (c) Megvii Inc. All rights reserved.
-import functools
-import os
-import time
-from collections import defaultdict, deque
 import psutil
 
 import numpy as np
 
 import torch
+
+import functools
+import os
+import time
+from collections import defaultdict, deque
 
 __all__ = [
     "AverageMeter",
